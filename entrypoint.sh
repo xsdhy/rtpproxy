@@ -1,18 +1,20 @@
 #!/bin/sh
-cmd="rtpproxy -F"
-if [ 0"$PUBLIC_ADDRESS" != "0" ]; then
-    cmd=$cmd" -A "$PUBLIC_ADDRESS
+: ${CLOUD=""} # One of aws, azure, do, gcp, or empty
+if [ "$CLOUD" != "" ]; then
+   PROVIDER="-provider ${CLOUD}"
 fi
-if [ 0"$INNER_ADDRESS" != "0" ]; then
-    cmd=$cmd" -l "$INNER_ADDRESS
+
+: ${MIN_PORT="20000"}
+: ${MAX_PORT="30000"}
+: ${PRIVATE_IPV4="$(netdiscover -field privatev4 ${PROVIDER})"}
+: ${PUBLIC_IPV4="$(netdiscover -field publicv4 ${PROVIDER})"}
+
+: ${RTPPROXY_ARGS:="-f -A ${PUBLIC_IPV4} -F -l ${PRIVATE_IPV4} -m ${MIN_PORT} -M ${MAX_PORT} -s udp:127.0.0.1:7722 -d INFO"}
+
+# If we were given arguments, run them instead
+if [ $# -gt 0 ]; then
+   exec "$@"
 fi
-if [ 0"$INNER_ADDRESS" != "0" ]; then
-    cmd=$cmd" -s "$INNER_ADDRESS
-fi
-if [ 0"$MEDIA_MIN_PORT" != "0" ]; then
-    cmd=$cmd" -m "$MEDIA_MIN_PORT
-fi
-if [ 0"$MEDIA_MAX_PORT" != "0" ]; then
-    cmd=$cmd" -M "$MEDIA_MAX_PORT
-fi
-$cmd
+
+# Run rtpproxy
+exec /usr/bin/rtpproxy ${RTPPROXY_ARGS}
