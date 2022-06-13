@@ -1,0 +1,12 @@
+version: "3"
+services:
+  rtpproxy:
+    container_name: 'rtpproxy'
+    image: 'xsdhy/rtpproxy:latest'
+    network_mode: host
+    environment:
+      - PUBLIC_ADDRESS=127.0.0.1
+      - INNER_ADDRESS=127.0.0.1
+      - OPENSIPS_ADDRESS=udp:127.0.0.1:12221
+      - MEDIA_MIN_PORT=26000
+      - MEDIA_MAX_PORT=30000
