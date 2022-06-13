@@ -6,10 +6,11 @@ fi
 
 : ${MIN_PORT="20000"}
 : ${MAX_PORT="30000"}
+: ${SOCKET_ADDR="udp:127.0.0.1:7722"}
 : ${PRIVATE_IPV4="$(netdiscover -field privatev4 ${PROVIDER})"}
 : ${PUBLIC_IPV4="$(netdiscover -field publicv4 ${PROVIDER})"}
 
-: ${RTPPROXY_ARGS:="-f -A ${PUBLIC_IPV4} -F -l ${PRIVATE_IPV4} -m ${MIN_PORT} -M ${MAX_PORT} -s udp:127.0.0.1:7722 -d INFO"}
+: ${RTPPROXY_ARGS:="-f -A ${PUBLIC_IPV4} -F -l ${PRIVATE_IPV4} -m ${MIN_PORT} -M ${MAX_PORT} -s ${SOCKET_ADDR} -d INFO"}
 
 # If we were given arguments, run them instead
 if [ $# -gt 0 ]; then
